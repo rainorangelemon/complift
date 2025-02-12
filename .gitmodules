@@ -1,0 +1,9 @@
+[submodule "2d_and_clevr"]
+	path = 2d_and_clevr
+	url = https://github.com/rainorangelemon/complift-2d-and-clevr.git
+[submodule "sam2"]
+	path = sam2
+	url = https://github.com/facebookresearch/sam2.git
+[submodule "text-to-image"]
+	path = text-to-image
+	url = https://github.com/rainorangelemon/complift-t2i.git
