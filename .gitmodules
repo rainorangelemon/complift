@@ -1,5 +1,5 @@
-[submodule "2d_and_clevr"]
-	path = 2d_and_clevr
+[submodule "2d-and-clevr"]
+	path = 2d-and-clevr
 	url = https://github.com/rainorangelemon/complift-2d-and-clevr.git
 [submodule "sam2"]
 	path = sam2
