@@ -1,7 +1,7 @@
 # 🎨 CompLift: Improving Compositional Generation with Diffusion Models
 
 <p align="center">
-<img src="text-to-image/figures/accepted_vs_rejected.png" width="800px"/>
+<img src="https://github.com/rainorangelemon/complift-t2i/blob/main/figures/accepted_vs_rejected.png" width="800px"/>
 <br>
 Our CompLift approach offers a straightforward solution to improve diffusion models without any extra training. When using regular diffusion models (shown above), combining multiple concepts in one generation often results in missing or incorrectly rendered elements. CompLift solves this problem by introducing a smart rejection way that measures how well each generated sample matches the individual intended components in the prompt, which we call the Lift Score. For more details, please refer to our paper.
 </p>
