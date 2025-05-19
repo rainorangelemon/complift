@@ -10,13 +10,15 @@ Our CompLift approach offers a straightforward solution to improve diffusion mod
 
 This repository contains the official implementation of *Improving Compositional Generation with Diffusion Models Using Lift Scores*. The project is split into two main components:
 
-1. **🎯 2D and CLEVR Tasks** ([2d-and-clevr/](2d-and-clevr/)): Implementation for synthetic 2D tasks and CLEVR position tasks.
-2. **🖼️ Text-to-Image Generation** ([text-to-image/](text-to-image/)): Implementation for improving compositional generation in text-to-image diffusion models like Stable Diffusion.
+1. **🎯 2D and CLEVR Tasks** ([2d-and-clevr/](https://github.com/rainorangelemon/complift-2d-and-clevr)): Implementation for synthetic 2D tasks and CLEVR position tasks.
+2. **🖼️ Text-to-Image Generation** ([text-to-image/](https://github.com/rainorangelemon/complift-t2i)): Implementation for improving compositional generation in text-to-image diffusion models like Stable Diffusion.
+
+Note: the SAM2 folder is only used for the CLEVR task. See the [CLEVR README](https://github.com/rainorangelemon/complift-2d-and-clevr#2-evaluate-samples-using-sam2) for more details.
 
 ## 🔗 Quick Links
 
-- [📚 2D and CLEVR Documentation](2d-and-clevr/README.md)
-- [📚 Text-to-Image Documentation](text-to-image/README.md)
+- [📚 2D and CLEVR Documentation](https://github.com/rainorangelemon/complift-2d-and-clevr)
+- [📚 Text-to-Image Documentation](https://github.com/rainorangelemon/complift-t2i)
 - [📓 2D Tasks Colab Notebook](https://colab.research.google.com/drive/1bVjGY-ym67CV8FiUxxkaMpbkWg9EQGcd?usp=sharing)
 - [📓 CLEVR Tasks Colab Notebook](https://colab.research.google.com/drive/1JPm_N8NThABc5jZmgiTB4RWnNUkKp491?usp=sharing)
 - [📓 Text-to-Image Colab Notebook](https://colab.research.google.com/drive/1bVjGY-ym67CV8FiUxxkaMpbkWg9EQGcd?usp=sharing)
@@ -33,8 +35,8 @@ This repository contains the official implementation of *Improving Compositional
 
 Each component has its own installation requirements. Please refer to the respective README files:
 
-- [📥 2D and CLEVR Installation](2d-and-clevr/README.md#-installation)
-- [📥 Text-to-Image Installation](text-to-image/README.md#setup)
+- [📥 2D and CLEVR Installation](https://github.com/rainorangelemon/complift-2d-and-clevr#-installation)
+- [📥 Text-to-Image Installation](https://github.com/rainorangelemon/complift-t2i#setup)
 
 ## 💻 Example Usage
 
@@ -61,6 +63,8 @@ python text-to-image/run.py --prompt "a cat and a dog" --seeds [0] --sd_xl=True 
 ```
 
 For detailed usage instructions, please refer to the respective component READMEs.
+- [📥 2D and CLEVR Usage](https://github.com/rainorangelemon/complift-2d-and-clevr#-2d-synthetic-dataset--)
+- [📥 Text-to-Image Usage](https://github.com/rainorangelemon/complift-t2i#usage)
 
 ## 📝 Citation
 
