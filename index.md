@@ -151,8 +151,8 @@ CompLift handles logical combinations of conditions:
 - **OR (Mixture)**: Accept if *any* subcondition has positive lift.
 - **NOT (Negation)**: Reject if a subcondition is satisfied.
 
-<div style="margin-left: auto; margin-right: auto;">
-  <table class="math-table" style="margin-left: auto; margin-right: auto; display: block; width: 50%">
+<div style="display: table; margin-left: auto; margin-right: auto;">
+  <table class="math-table" style="margin: 0px auto; margin-left: auto; margin-right: auto;">
     <thead>
       <tr>
         <th>Type</th>
@@ -160,27 +160,27 @@ CompLift handles logical combinations of conditions:
         <th>Acceptance Criterion</th>
       </tr>
     </thead>
-    <tbody>
+    <tbody style="text-align: center; margin-left: auto; margin-right: auto;">
       <tr>
         <td>Product</td>
-        <td>$$c_1 \wedge c_2$$</td>
-        <td>$$\min_{i\in[1,2]}\text{lift}(x|c_i)> 0$$</td>
+        <td>\(c_1 \wedge c_2\)</td>
+        <td>\(\min_{i\in[1,2]}\text{lift}(x|c_i)> 0\)</td>
       </tr>
       <tr>
         <td>Mixture</td>
-        <td>$$c_1 \vee c_2$$</td>
-        <td>$$\max_{i\in[1,2]}\text{lift}(x|c_i)> 0$$</td>
+        <td>\(c_1 \vee c_2\)</td>
+        <td>\(\max_{i\in[1,2]}\text{lift}(x|c_i)> 0\)</td>
       </tr>
       <tr>
         <td>Negation</td>
-        <td>$$\neg c_1$$</td>
-        <td>$$\text{lift}(x|c_1)\leq 0$$</td>
+        <td>\(\neg c_1\)</td>
+        <td>\(\text{lift}(x|c_1)\leq 0\)</td>
       </tr>
     </tbody>
   </table>
 </div>
 
-<p style="text-align: center; margin-top: 10px; font-size: 0.9em;">
+<p style="text-align: center; font-size: 0.9em;">
   <b>Table 1:</b> Examples of composition rules for multiple conditions.
 </p>
 
