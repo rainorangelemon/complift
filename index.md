@@ -16,11 +16,11 @@ In our ICML 2025 paper, we introduce **CompLift**—a lightweight, training-free
 1. [Sometimes, Compositional Prompts Break Diffusion Models](#-sometimes-compositional-prompts-break-diffusion-models)
 2. [A Toy 2D Example](#-a-toy-2d-example)
 3. [What is CompLift?](#-what-is-complift)
-4. [Lift Scores, Explained](#-lift-scores-explained)
-5. [Compositional Logic via Lift](#-compositional-logic-via-lift)
-6. [Efficient Implementation](#-efficient-implementation)
-7. [Results](#-results)
-8. [Lift in the Latent Space](#-lift-in-the-latent-space)
+    1. [Lift Scores, Explained](#-lift-scores-explained)
+    2. [Compositional Logic via Lift](#-compositional-logic-via-lift)
+    3. [Efficient Implementation](#-efficient-implementation)
+4. [Results](#-results)
+5. [Lift in the Latent Space](#-lift-in-the-latent-space)
 
 ## 🤔 Sometimes, Compositional Prompts Break Diffusion Models
 
@@ -116,9 +116,29 @@ Our goal is to design a **rejection criterion** that can detect whether a genera
 
 Lift measures how much a condition $$c$$ influences the probability of generating a sample $$x$$. Formally:
 
-$$\text{\textit{lift}}(x|c) = \log\left( \frac{p(x|c)}{p(x)} \right)$$
+$$
+\begin{equation}
+\text{lift}(x|c) = \log\frac{p(x|c)}{p(x)} \tag{1}
+\label{eqn:lift}
+\end{equation}
+$$
 
-We approximate this using the internal denoising predictions of the diffusion model itself. Intuitively:
+In practice, we show that we can approximate Eq. \eqref{eqn:lift} using the internal denoising predictions of the diffusion model itself. Similar techniques can be found in [Diffusion Classifier](https://diffusion-classifier.github.io/).
+
+$$
+\begin{equation}
+\text{lift}(x|c) \approx \mathbb{E}_{t,\epsilon}\{||\epsilon-\epsilon_\theta(x_t, \varnothing)||^2-||\epsilon-\epsilon_\theta(x_t, c)||^2\} \tag{2}
+\label{eqn:lift-approx}
+\end{equation}
+$$
+
+Note:
+- $$\epsilon_\theta$$ is the diffusion model
+- $$t$$ is randomly sampled diffusion steps
+- $$\epsilon \sim \mathcal{N}(0, I)$$ is the randomly sampled noise
+- $$x_t$$ is the sample at step $$t$$, which is a noisy version of $$x_0$$
+
+Intuitively, Eq. \eqref{eqn:lift-approx} means:
 
 > If a sample aligns with the condition, the model should be **better at denoising it** when given that condition.
 
