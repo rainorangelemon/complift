@@ -1,0 +1,7 @@
+theme: jekyll-theme-cayman
+kramdown:
+  math_engine: mathjax
+show_downloads: true
+github:
+  paper_url: https://arxiv.org/abs/2505.13740
+  code_url: https://github.com/rainorangelemon/complift
