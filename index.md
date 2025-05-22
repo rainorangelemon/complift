@@ -14,7 +14,6 @@ In our ICML 2025 paper, we introduce **CompLift**—a lightweight, training-free
 # Table of Contents:
 
 1. [Sometimes, Compositional Prompts Break Diffusion Models](#-sometimes-compositional-prompts-break-diffusion-models)
-2. [A Toy 2D Example](#-a-toy-2d-example)
 3. [What is CompLift?](#-what-is-complift)
     1. [Lift Scores, Explained](#-lift-scores-explained)
     2. [Compositional Logic via Lift](#-compositional-logic-via-lift)
@@ -142,9 +141,9 @@ Intuitively, Eq. \eqref{eqn:lift-approx} means:
 
 > If a sample aligns with the condition, the model should be **better at denoising it** when given that condition.
 
-This allows us to check conditions *after* generation, and reject samples that don't satisfy them.
+This allows us to check conditions *after* generation, and reject samples that don't satisfy them. Note that this is **training-free** and **does not require any extra models**.
 
-## 🧠 Compositional Logic via Lift
+### 🧠 Compositional Logic via Lift
 
 CompLift handles logical combinations of conditions:
 
@@ -152,9 +151,183 @@ CompLift handles logical combinations of conditions:
 - **OR (Mixture)**: Accept if *any* subcondition has positive lift.
 - **NOT (Negation)**: Reject if a subcondition is satisfied.
 
-This compositional approach lets us flexibly combine prompts into logical structures—just like symbolic logic!
+<div style="margin-left: auto; margin-right: auto;">
+  <table class="math-table" style="margin-left: auto; margin-right: auto; display: block; width: 50%">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Algebra</th>
+        <th>Acceptance Criterion</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Product</td>
+        <td>$$c_1 \wedge c_2$$</td>
+        <td>$$\min_{i\in[1,2]}\text{lift}(x|c_i)> 0$$</td>
+      </tr>
+      <tr>
+        <td>Mixture</td>
+        <td>$$c_1 \vee c_2$$</td>
+        <td>$$\max_{i\in[1,2]}\text{lift}(x|c_i)> 0$$</td>
+      </tr>
+      <tr>
+        <td>Negation</td>
+        <td>$$\neg c_1$$</td>
+        <td>$$\text{lift}(x|c_1)\leq 0$$</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
-## ⚙️ Efficient Implementation
+<p style="text-align: center; margin-top: 10px; font-size: 0.9em;">
+  <b>Table 1:</b> Examples of composition rules for multiple conditions.
+</p>
+
+This compositional approach lets us flexibly combine prompts into logical structures! We call this compositional criteria as **CompLift**. Here we show some examples in 2D synthetic tasks.
+
+<div style="margin: 20px 0;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <div style="flex: 1; text-align: center;">
+            <span style="line-height: 24px;">Component A</span>
+        </div>
+        <div style="flex: 0.2; text-align: center;"></div>
+        <div style="flex: 1; text-align: center;">
+            <span style="line-height: 24px;">Component B</span>
+        </div>
+        <div style="flex: 0.2; text-align: center;"></div>
+        <div style="flex: 1; text-align: center;">
+            <label style="display: inline-flex; align-items: center; gap: 2px;">
+                <input type="checkbox" checked onclick="toggleVisibility('gt')" style="margin: 0;"> Ground Truth
+            </label>
+        </div>
+        <div style="flex: 0.2; text-align: center;"></div>
+        <div style="flex: 1; text-align: center;">
+            <label style="display: inline-flex; align-items: center; gap: 2px;">
+                <input type="checkbox" checked onclick="toggleVisibility('cd')" style="margin: 0;"> Composable Diffusion
+            </label>
+        </div>
+        <div style="flex: 0.2; text-align: center;"></div>
+        <div style="flex: 1; text-align: center;">
+            <label style="display: inline-flex; align-items: center; gap: 2px;">
+                <input type="checkbox" checked onclick="toggleVisibility('cl')" style="margin: 0;"> CompLift (ours)
+            </label>
+        </div>
+    </div>
+
+    <h4 style="text-align: center; margin: 20px 0 10px;">Product Example</h4>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <div style="flex: 1;">
+            <img src="images/product_a3/sample_1_gt.png" alt="Sample 1" style="width: 100%; max-width: 150px;">
+        </div>
+        <div style="flex: 0.2; text-align: center;">
+            <span style="font-size: 24px; font-weight: bold;">\(\times\)</span>
+        </div>
+        <div style="flex: 1;">
+            <img src="images/product_a3/sample_2_gt.png" alt="Sample 2" style="width: 100%; max-width: 150px;">
+        </div>
+        <div style="flex: 0.2; text-align: center;">
+            <span style="font-size: 24px; font-weight: bold;">=</span>
+        </div>
+        <div style="flex: 1;" id="gt-product">
+            <img src="images/product_a3/sample_composed_gt.png" alt="Ground Truth" style="width: 100%; max-width: 150px;">
+        </div>
+        <div style="flex: 0.2; text-align: center;">
+            <span style="font-size: 24px; font-weight: bold;"> </span>
+        </div>
+        <div style="flex: 1;" id="cd-product">
+            <img src="images/product_a3/baseline_diffusion.png" alt="Baseline" style="width: 100%; max-width: 150px;">
+        </div>
+        <div style="flex: 0.2; text-align: center;">
+            <span style="font-size: 24px; font-weight: bold;"> </span>
+        </div>
+        <div style="flex: 1;" id="cl-product">
+            <img src="images/product_a3/baseline_rejection.png" alt="With CompLift" style="width: 100%; max-width: 150px;">
+        </div>
+    </div>
+
+    <h4 style="text-align: center; margin: 20px 0 10px;">Mixture Example</h4>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <div style="flex: 1;">
+            <img src="images/summation_a3/sample_1_gt.png" alt="Sample 1" style="width: 100%; max-width: 150px;">
+        </div>
+        <div style="flex: 0.2; text-align: center;">
+            <span style="font-size: 24px; font-weight: bold;">\(+\)</span>
+        </div>
+        <div style="flex: 1;">
+            <img src="images/summation_a3/sample_2_gt.png" alt="Sample 2" style="width: 100%; max-width: 150px;">
+        </div>
+        <div style="flex: 0.2; text-align: center;">
+            <span style="font-size: 24px; font-weight: bold;">=</span>
+        </div>
+        <div style="flex: 1;" id="gt-sum">
+            <img src="images/summation_a3/sample_composed_gt.png" alt="Ground Truth" style="width: 100%; max-width: 150px;">
+        </div>
+        <div style="flex: 0.2; text-align: center;">
+            <span style="font-size: 24px; font-weight: bold;"> </span>
+        </div>
+        <div style="flex: 1;" id="cd-sum">
+            <img src="images/summation_a3/baseline_diffusion.png" alt="Baseline" style="width: 100%; max-width: 150px;">
+        </div>
+        <div style="flex: 0.2; text-align: center;">
+            <span style="font-size: 24px; font-weight: bold;"> </span>
+        </div>
+        <div style="flex: 1;" id="cl-sum">
+            <img src="images/summation_a3/baseline_rejection.png" alt="With CompLift" style="width: 100%; max-width: 150px;">
+        </div>
+    </div>
+
+    <h4 style="text-align: center; margin: 20px 0 10px;">Negation Example</h4>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <div style="flex: 1;">
+            <img src="images/negation_a3/sample_1_gt.png" alt="Sample 1" style="width: 100%; max-width: 150px;">
+        </div>
+        <div style="flex: 0.2; text-align: center;">
+            <span style="font-size: 24px; font-weight: bold;">\(-\)</span>
+        </div>
+        <div style="flex: 1;">
+            <img src="images/negation_a3/sample_2_gt.png" alt="Sample 2" style="width: 100%; max-width: 150px;">
+        </div>
+        <div style="flex: 0.2; text-align: center;">
+            <span style="font-size: 24px; font-weight: bold;">=</span>
+        </div>
+        <div style="flex: 1;" id="gt-neg">
+            <img src="images/negation_a3/sample_composed_gt.png" alt="Ground Truth" style="width: 100%; max-width: 150px;">
+        </div>
+        <div style="flex: 0.2; text-align: center;">
+            <span style="font-size: 24px; font-weight: bold;"> </span>
+        </div>
+        <div style="flex: 1;" id="cd-neg">
+            <img src="images/negation_a3/baseline_diffusion.png" alt="Baseline" style="width: 100%; max-width: 150px;">
+        </div>
+        <div style="flex: 0.2; text-align: center;">
+            <span style="font-size: 24px; font-weight: bold;"> </span>
+        </div>
+        <div style="flex: 1;" id="cl-neg">
+            <img src="images/negation_a3/baseline_rejection.png" alt="With CompLift" style="width: 100%; max-width: 150px;">
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleVisibility(id) {
+    const element = document.getElementById(id + '-product');
+    const elementSum = document.getElementById(id + '-sum');
+    const elementNeg = document.getElementById(id + '-neg');
+
+    if (element.style.visibility === 'hidden') {
+        element.style.visibility = 'visible';
+        elementSum.style.visibility = 'visible';
+        elementNeg.style.visibility = 'visible';
+    } else {
+        element.style.visibility = 'hidden';
+        elementSum.style.visibility = 'hidden';
+        elementNeg.style.visibility = 'hidden';
+    }
+}
+</script>
+
+### ⚙️ Efficient Implementation
 
 We propose two versions:
 
