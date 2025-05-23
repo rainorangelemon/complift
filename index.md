@@ -44,10 +44,9 @@ The model might tend to generate a black car, and ignore the white clock. See th
 
 .grid-item {
   aspect-ratio: 1;
-  background-color: #f0f0f0;
   border: 2px solid #ddd;
   border-radius: 4px;
-  transition: all 0.3s ease;
+  transition: all 0.1s ease;
   position: relative;
   background-size: cover;
   background-position: center;
@@ -380,7 +379,7 @@ Across the board, CompLift significantly improves prompt alignment without harmi
 | CLEVR Position (5 objects) | Accuracy  | 78.7%    | **90.3%** |
 | SD 2.1         | CLIP Score | 0.342    | **0.352** |
 
-Here we show some examples of the generated samples with Stable Diffusion XL. <span style="color: #2196F3;">Blue-bordered</span> images are <span style="color: #2196F3;">accepted</span> by the CompLift, while <span style="color: #FF9800;">orange-bordered</span> images are <span style="color: #FF9800;">rejected</span>.
+Here we show some examples of the generated samples with Stable Diffusion XL. <span style="color: #2196F3;">Blue-bordered</span> images are <span style="color: #2196F3;"><strong>accepted</strong></span> by the CompLift, while <span style="color: #FF9800;">orange-bordered</span> images are <span style="color: #FF9800;"><strong>rejected</strong></span>.
 
 <style>
 .image-gallery {
@@ -403,7 +402,7 @@ Here we show some examples of the generated samples with Stable Diffusion XL. <s
 .gallery-image {
     width: 20%;
     object-fit: cover;
-    transition: all 0.3s ease;
+    transition: all 0.1s ease;
     position: relative;
     z-index: 1;
     border: 2px solid #ddd;
