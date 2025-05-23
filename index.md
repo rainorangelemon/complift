@@ -380,8 +380,181 @@ Across the board, CompLift significantly improves prompt alignment without harmi
 | CLEVR Position (5 objects) | Accuracy  | 78.7%    | **90.3%** |
 | SD 2.1         | CLIP Score | 0.342    | **0.352** |
 
-Here we show some examples of the generated samples with Stable Diffusion XL.
+Here we show some examples of the generated samples with Stable Diffusion XL. <span style="color: #2196F3;">Blue-bordered</span> images are <span style="color: #2196F3;">accepted</span> by the CompLift, while <span style="color: #FF9800;">orange-bordered</span> images are <span style="color: #FF9800;">rejected</span>.
 
+<style>
+.image-gallery {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0;
+    gap: 3px;
+}
+
+.gallery-group {
+    margin: 0;
+    width: 49%;
+}
+
+.image-row {
+    display: flex;
+    gap: 3px;
+}
+
+.gallery-image {
+    width: 20%;
+    object-fit: cover;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+    border: 2px solid #ddd;
+    border-radius: 4px;
+}
+
+.gallery-image.accepted {
+    border-color: #2196F3;
+}
+
+.gallery-image.rejected {
+    border-color: #FF9800;
+}
+
+.gallery-image:hover {
+    transform: scale(4);
+    z-index: 2;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    border-radius: 8px;
+}
+
+.gallery-caption {
+    text-align: center;
+    font-size: 0.9em;
+    margin-top: 5px;
+}
+
+.highlight {
+    color: #2196F3;
+}
+</style>
+
+<div class="image-gallery">
+    <figure class="gallery-group">
+        <div class="image-row">
+            <img src="sd_xl/a turtle and a blue clock/0.jpg" class="gallery-image accepted" alt="Turtle and clock 1">
+            <img src="sd_xl/a turtle and a blue clock/1.jpg" class="gallery-image accepted" alt="Turtle and clock 2">
+            <img src="sd_xl/a turtle and a blue clock/2.jpg" class="gallery-image accepted" alt="Turtle and clock 3">
+            <img src="sd_xl/a turtle and a blue clock/3.jpg" class="gallery-image rejected" alt="Turtle and clock 4">
+            <img src="sd_xl/a turtle and a blue clock/4.jpg" class="gallery-image accepted" alt="Turtle and clock 5">
+        </div>
+        <figcaption class="gallery-caption"><span class="highlight">a turtle</span> and <span class="highlight">a blue clock</span></figcaption>
+    </figure>
+
+    <figure class="gallery-group">
+        <div class="image-row">
+            <img src="sd_xl/a frog with a bow/0.jpg" class="gallery-image rejected" alt="Frog with bow 1">
+            <img src="sd_xl/a frog with a bow/1.jpg" class="gallery-image accepted" alt="Frog with bow 2">
+            <img src="sd_xl/a frog with a bow/2.jpg" class="gallery-image accepted" alt="Frog with bow 3">
+            <img src="sd_xl/a frog with a bow/3.jpg" class="gallery-image rejected" alt="Frog with bow 4">
+            <img src="sd_xl/a frog with a bow/4.jpg" class="gallery-image accepted" alt="Frog with bow 5">
+        </div>
+        <figcaption class="gallery-caption"><span class="highlight">a frog</span> with <span class="highlight">a bow</span></figcaption>
+    </figure>
+</div>
+
+<div class="image-gallery">
+    <figure class="gallery-group">
+        <div class="image-row">
+            <img src="sd_xl/a orange backpack and a purple car/0.jpg" class="gallery-image rejected" alt="Backpack and car 1">
+            <img src="sd_xl/a orange backpack and a purple car/1.jpg" class="gallery-image rejected" alt="Backpack and car 2">
+            <img src="sd_xl/a orange backpack and a purple car/2.jpg" class="gallery-image accepted" alt="Backpack and car 3">
+            <img src="sd_xl/a orange backpack and a purple car/3.jpg" class="gallery-image rejected" alt="Backpack and car 4">
+            <img src="sd_xl/a orange backpack and a purple car/4.jpg" class="gallery-image accepted" alt="Backpack and car 5">
+        </div>
+        <figcaption class="gallery-caption"><span class="highlight">an orange backpack</span> and <span class="highlight">a purple car</span></figcaption>
+    </figure>
+
+    <figure class="gallery-group">
+        <div class="image-row">
+            <img src="sd_xl/a elephant with a glasses/0.jpg" class="gallery-image rejected" alt="Elephant with glasses 1">
+            <img src="sd_xl/a elephant with a glasses/1.jpg" class="gallery-image accepted" alt="Elephant with glasses 2">
+            <img src="sd_xl/a elephant with a glasses/2.jpg" class="gallery-image accepted" alt="Elephant with glasses 3">
+            <img src="sd_xl/a elephant with a glasses/3.jpg" class="gallery-image rejected" alt="Elephant with glasses 4">
+            <img src="sd_xl/a elephant with a glasses/4.jpg" class="gallery-image accepted" alt="Elephant with glasses 5">
+        </div>
+        <figcaption class="gallery-caption"><span class="highlight">an elephant</span> with <span class="highlight">glasses</span></figcaption>
+    </figure>
+</div>
+
+<div class="image-gallery">
+    <figure class="gallery-group">
+        <div class="image-row">
+            <img src="sd_xl/a cat and a horse/0.jpg" class="gallery-image rejected" alt="Cat and horse 1">
+            <img src="sd_xl/a cat and a horse/1.jpg" class="gallery-image accepted" alt="Cat and horse 2">
+            <img src="sd_xl/a cat and a horse/2.jpg" class="gallery-image accepted" alt="Cat and horse 3">
+            <img src="sd_xl/a cat and a horse/3.jpg" class="gallery-image rejected" alt="Cat and horse 4">
+            <img src="sd_xl/a cat and a horse/4.jpg" class="gallery-image accepted" alt="Cat and horse 5">
+        </div>
+        <figcaption class="gallery-caption"><span class="highlight">a cat</span> and <span class="highlight">a horse</span></figcaption>
+    </figure>
+
+    <figure class="gallery-group">
+        <div class="image-row">
+            <img src="sd_xl/a black crown and a red car/0.jpg" class="gallery-image rejected" alt="Crown and car 1">
+            <img src="sd_xl/a black crown and a red car/1.jpg" class="gallery-image rejected" alt="Crown and car 2">
+            <img src="sd_xl/a black crown and a red car/2.jpg" class="gallery-image accepted" alt="Crown and car 3">
+            <img src="sd_xl/a black crown and a red car/3.jpg" class="gallery-image rejected" alt="Crown and car 4">
+            <img src="sd_xl/a black crown and a red car/4.jpg" class="gallery-image rejected" alt="Crown and car 5">
+        </div>
+        <figcaption class="gallery-caption"><span class="highlight">a black crown</span> and <span class="highlight">a red car</span></figcaption>
+    </figure>
+</div>
+
+<div class="image-gallery">
+    <figure class="gallery-group">
+        <div class="image-row">
+            <img src="sd_xl/a white bow and a white car/0.jpg" class="gallery-image rejected" alt="Crown and car 1">
+            <img src="sd_xl/a white bow and a white car/1.jpg" class="gallery-image rejected" alt="Crown and car 2">
+            <img src="sd_xl/a white bow and a white car/2.jpg" class="gallery-image rejected" alt="Crown and car 3">
+            <img src="sd_xl/a white bow and a white car/3.jpg" class="gallery-image accepted" alt="Crown and car 4">
+            <img src="sd_xl/a white bow and a white car/4.jpg" class="gallery-image rejected" alt="Crown and car 5">
+        </div>
+        <figcaption class="gallery-caption"><span class="highlight">a white bow</span> and <span class="highlight">a white car</span></figcaption>
+    </figure>
+
+    <figure class="gallery-group">
+        <div class="image-row">
+            <img src="sd_xl/a lion with a bow/0.jpg" class="gallery-image rejected" alt="Lion and bow 1">
+            <img src="sd_xl/a lion with a bow/1.jpg" class="gallery-image rejected" alt="Lion and bow 2">
+            <img src="sd_xl/a lion with a bow/2.jpg" class="gallery-image rejected" alt="Lion and bow 3">
+            <img src="sd_xl/a lion with a bow/3.jpg" class="gallery-image accepted" alt="Lion and bow 4">
+            <img src="sd_xl/a lion with a bow/4.jpg" class="gallery-image accepted" alt="Lion and bow 5">
+        </div>
+        <figcaption class="gallery-caption"><span class="highlight">a lion</span> with <span class="highlight">a bow</span></figcaption>
+    </figure>
+</div>
+
+<div class="image-gallery">
+    <figure class="gallery-group">
+        <div class="image-row">
+            <img src="sd_xl/a red backpack and a yellow bowl/0.jpg" class="gallery-image accepted" alt="Red backpack and yellow bowl 1">
+            <img src="sd_xl/a red backpack and a yellow bowl/1.jpg" class="gallery-image rejected" alt="Red backpack and yellow bowl 2">
+            <img src="sd_xl/a red backpack and a yellow bowl/2.jpg" class="gallery-image rejected" alt="Red backpack and yellow bowl 3">
+            <img src="sd_xl/a red backpack and a yellow bowl/3.jpg" class="gallery-image accepted" alt="Red backpack and yellow bowl 4">
+            <img src="sd_xl/a red backpack and a yellow bowl/4.jpg" class="gallery-image accepted" alt="Red backpack and yellow bowl 5">
+        </div>
+        <figcaption class="gallery-caption"><span class="highlight">a red backpack</span> and <span class="highlight">a yellow bowl</span></figcaption>
+    </figure>
+
+    <figure class="gallery-group">
+        <div class="image-row">
+            <img src="sd_xl/a black car and a white clock/0.jpg" class="gallery-image rejected" alt="Black car and white clock 1">
+            <img src="sd_xl/a black car and a white clock/1.jpg" class="gallery-image accepted" alt="Black car and white clock 2">
+            <img src="sd_xl/a black car and a white clock/2.jpg" class="gallery-image rejected" alt="Black car and white clock 3">
+            <img src="sd_xl/a black car and a white clock/3.jpg" class="gallery-image rejected" alt="Black car and white clock 4">
+            <img src="sd_xl/a black car and a white clock/4.jpg" class="gallery-image accepted" alt="Black car and white clock 5">
+        </div>
+        <figcaption class="gallery-caption"><span class="highlight">a black car</span> and <span class="highlight">a white clock</span></figcaption>
+    </figure>
+</div>
 ## 🔬 Lift in the Latent Space
 
 To handle fine-grained image prompts, we compute lift *per pixel* in the latent space, allowing us to detect whether each object is truly present. This even helps in understanding *which* part of the image aligns with each prompt component.
