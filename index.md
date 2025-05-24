@@ -46,7 +46,7 @@ The model might tend to generate a black car, and ignore the white clock. See th
   aspect-ratio: 1;
   border: 2px solid #ddd;
   border-radius: 4px;
-  transition: all 0.1s ease;
+  transition: transform 0.1s ease;
   position: relative;
   background-size: cover;
   background-position: center;
@@ -394,6 +394,10 @@ Here we show some examples of the generated samples with Stable Diffusion XL. <s
     width: 49%;
 }
 
+.gallery-group-lift-scores {
+    width: 100%;
+}
+
 .image-row {
     display: flex;
     gap: 3px;
@@ -401,27 +405,54 @@ Here we show some examples of the generated samples with Stable Diffusion XL. <s
 
 .gallery-image {
     width: 20%;
-    object-fit: cover;
-    transition: all 0.1s ease;
+    object-fit: contain;
     position: relative;
     z-index: 1;
-    border: 2px solid #ddd;
-    border-radius: 4px;
+    pointer-events: none;  /* Disable hover by default */
+}
+
+.gallery-image.original,
+.gallery-image.latent,
+.gallery-image.heatmap1,
+.gallery-image.heatmap2,
+.gallery-image.heatmap3,
+.gallery-image.accepted,
+.gallery-image.rejected {
+    pointer-events: auto;  /* Enable hover for these classes */
+    transition: transform 0.2s ease;
+}
+
+/* Make hover work regardless of accepted/rejected state */
+.gallery-image.original:hover,
+.gallery-image.latent:hover,
+.gallery-image.heatmap1:hover,
+.gallery-image.heatmap2:hover,
+.gallery-image.heatmap3:hover {
+    transform: scale(2);
+    z-index: 20;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+.gallery-image.accepted:hover,
+.gallery-image.rejected:hover {
+    transform: scale(4);
+    z-index: 20;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
 
 .gallery-image.accepted {
+    border: 2px solid #ddd;
     border-color: #2196F3;
+    border-radius: 4px;
+    transform: scale(1);
+    transition: transform 0.2s ease;
 }
 
 .gallery-image.rejected {
+    border: 2px solid #ddd;
     border-color: #FF9800;
-}
-
-.gallery-image:hover {
-    transform: scale(4);
-    z-index: 2;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    border-radius: 8px;
+    border-radius: 4px;
+    transform: scale(1);
+    transition: transform 0.2s ease;
 }
 
 .gallery-caption {
@@ -433,7 +464,47 @@ Here we show some examples of the generated samples with Stable Diffusion XL. <s
 .highlight {
     color: #2196F3;
 }
+
+.gallery-image.hidden {
+    visibility: hidden;
+    opacity: 0;
+}
+
+.gallery-image:not(.hidden) {
+    visibility: visible;
+    opacity: 1;
+}
+
+.heatmap1, .heatmap2, .heatmap3 {
+    transform: scale(1);
+    transition: transform 0.2s ease;
+}
+
+.highlight-active {
+    text-decoration: underline;
+    font-weight: bold;
+}
+
+.heatmap-active {
+    transform: scale(1.2);
+    z-index: 10;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
 </style>
+
+<script>
+function toggleColumn(columnClass) {
+    const images = document.querySelectorAll(`.gallery-image.${columnClass}`);
+    const isHidden = images[0].classList.contains('hidden');
+    images.forEach(img => {
+        if (isHidden) {
+            img.classList.remove('hidden');
+        } else {
+            img.classList.add('hidden');
+        }
+    });
+}
+</script>
 
 <div class="image-gallery">
     <figure class="gallery-group">
@@ -446,7 +517,29 @@ Here we show some examples of the generated samples with Stable Diffusion XL. <s
         </div>
         <figcaption class="gallery-caption"><span class="highlight">a turtle</span> and <span class="highlight">a blue clock</span></figcaption>
     </figure>
+    <figure class="gallery-group">
+        <div class="image-row">
+            <img src="sd_xl/a cat and a horse/0.jpg" class="gallery-image rejected" alt="Cat and horse 1">
+            <img src="sd_xl/a cat and a horse/1.jpg" class="gallery-image accepted" alt="Cat and horse 2">
+            <img src="sd_xl/a cat and a horse/2.jpg" class="gallery-image accepted" alt="Cat and horse 3">
+            <img src="sd_xl/a cat and a horse/3.jpg" class="gallery-image rejected" alt="Cat and horse 4">
+            <img src="sd_xl/a cat and a horse/4.jpg" class="gallery-image accepted" alt="Cat and horse 5">
+        </div>
+        <figcaption class="gallery-caption"><span class="highlight">a cat</span> and <span class="highlight">a horse</span></figcaption>
+    </figure>
+</div>
 
+<div class="image-gallery">
+    <figure class="gallery-group">
+        <div class="image-row">
+            <img src="sd_xl/a orange backpack and a purple car/0.jpg" class="gallery-image rejected" alt="Backpack and car 1">
+            <img src="sd_xl/a orange backpack and a purple car/1.jpg" class="gallery-image rejected" alt="Backpack and car 2">
+            <img src="sd_xl/a orange backpack and a purple car/2.jpg" class="gallery-image accepted" alt="Backpack and car 3">
+            <img src="sd_xl/a orange backpack and a purple car/3.jpg" class="gallery-image rejected" alt="Backpack and car 4">
+            <img src="sd_xl/a orange backpack and a purple car/4.jpg" class="gallery-image accepted" alt="Backpack and car 5">
+        </div>
+        <figcaption class="gallery-caption"><span class="highlight">an orange backpack</span> and <span class="highlight">a purple car</span></figcaption>
+    </figure>
     <figure class="gallery-group">
         <div class="image-row">
             <img src="sd_xl/a frog with a bow/0.jpg" class="gallery-image rejected" alt="Frog with bow 1">
@@ -462,17 +555,6 @@ Here we show some examples of the generated samples with Stable Diffusion XL. <s
 <div class="image-gallery">
     <figure class="gallery-group">
         <div class="image-row">
-            <img src="sd_xl/a orange backpack and a purple car/0.jpg" class="gallery-image rejected" alt="Backpack and car 1">
-            <img src="sd_xl/a orange backpack and a purple car/1.jpg" class="gallery-image rejected" alt="Backpack and car 2">
-            <img src="sd_xl/a orange backpack and a purple car/2.jpg" class="gallery-image accepted" alt="Backpack and car 3">
-            <img src="sd_xl/a orange backpack and a purple car/3.jpg" class="gallery-image rejected" alt="Backpack and car 4">
-            <img src="sd_xl/a orange backpack and a purple car/4.jpg" class="gallery-image accepted" alt="Backpack and car 5">
-        </div>
-        <figcaption class="gallery-caption"><span class="highlight">an orange backpack</span> and <span class="highlight">a purple car</span></figcaption>
-    </figure>
-
-    <figure class="gallery-group">
-        <div class="image-row">
             <img src="sd_xl/a elephant with a glasses/0.jpg" class="gallery-image rejected" alt="Elephant with glasses 1">
             <img src="sd_xl/a elephant with a glasses/1.jpg" class="gallery-image accepted" alt="Elephant with glasses 2">
             <img src="sd_xl/a elephant with a glasses/2.jpg" class="gallery-image accepted" alt="Elephant with glasses 3">
@@ -480,19 +562,6 @@ Here we show some examples of the generated samples with Stable Diffusion XL. <s
             <img src="sd_xl/a elephant with a glasses/4.jpg" class="gallery-image accepted" alt="Elephant with glasses 5">
         </div>
         <figcaption class="gallery-caption"><span class="highlight">an elephant</span> with <span class="highlight">glasses</span></figcaption>
-    </figure>
-</div>
-
-<div class="image-gallery">
-    <figure class="gallery-group">
-        <div class="image-row">
-            <img src="sd_xl/a cat and a horse/0.jpg" class="gallery-image rejected" alt="Cat and horse 1">
-            <img src="sd_xl/a cat and a horse/1.jpg" class="gallery-image accepted" alt="Cat and horse 2">
-            <img src="sd_xl/a cat and a horse/2.jpg" class="gallery-image accepted" alt="Cat and horse 3">
-            <img src="sd_xl/a cat and a horse/3.jpg" class="gallery-image rejected" alt="Cat and horse 4">
-            <img src="sd_xl/a cat and a horse/4.jpg" class="gallery-image accepted" alt="Cat and horse 5">
-        </div>
-        <figcaption class="gallery-caption"><span class="highlight">a cat</span> and <span class="highlight">a horse</span></figcaption>
     </figure>
 
     <figure class="gallery-group">
@@ -554,9 +623,216 @@ Here we show some examples of the generated samples with Stable Diffusion XL. <s
         <figcaption class="gallery-caption"><span class="highlight">a black car</span> and <span class="highlight">a white clock</span></figcaption>
     </figure>
 </div>
+
+In the examples above, CompLift shows great promise in improving prompt alignment. However, some limitations of CompLift can also be perceived:
+
+- Since the ELBO estimation is an approximation, the lift score is not always accurate. This leads to some samples that are rejected but should be accepted, and vice versa (e.g., 1st image in "a frog with a bow" and 2nd image in "a lion with a bow").
+- Too small objects tend to be rejected, e.g., the 2nd image in "a red backpack and a yellow bowl".
+- Color-based conditions are not always identified effectively, e.g., the 5th image in "an orange backpack and a purple car".
+
 ## 🔬 Lift in the Latent Space
 
-To handle fine-grained image prompts, we compute lift *per pixel* in the latent space, allowing us to detect whether each object is truly present. This even helps in understanding *which* part of the image aligns with each prompt component.
+To handle fine-grained image prompts, we compute lift scores *per pixel* in the latent space, allowing us to detect whether each object is truly present. This even helps in understanding *which* part of the image aligns with each prompt component.
+
+Here are some examples showing how lift scores help identify different objects in complex scenes:
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin: 20px 0;">
+    <div style="flex: 1; text-align: center;">
+        <label style="display: inline-flex; align-items: center; gap: 2px;">
+            <input type="checkbox" checked onclick="toggleColumn('original')" style="margin: 0;"> Original Image
+        </label>
+    </div>
+    <div style="flex: 1; text-align: center;">
+        <label style="display: inline-flex; align-items: center; gap: 2px;">
+            <input type="checkbox" checked onclick="toggleColumn('latent')" style="margin: 0;"> Latent Space
+        </label>
+    </div>
+    <div style="flex: 1; text-align: center;">
+        <label style="display: inline-flex; align-items: center; gap: 2px;">
+            <input type="checkbox" checked onclick="toggleColumn('heatmap1')" style="margin: 0;"> <span style="color: #F44336; background-color: rgba(244, 67, 54, 0.1);"> Component A</span>
+        </label>
+    </div>
+    <div style="flex: 1; text-align: center;">
+        <label style="display: inline-flex; align-items: center; gap: 2px;">
+            <input type="checkbox" checked onclick="toggleColumn('heatmap2')" style="margin: 0;"> <span style="color: #FF8F00; background-color: rgba(255, 193, 7, 0.1);"> Component B</span>
+        </label>
+    </div>
+    <div style="flex: 1; text-align: center;">
+        <label style="display: inline-flex; align-items: center; gap: 2px;">
+            <input type="checkbox" checked onclick="toggleColumn('heatmap3')" style="margin: 0;"> <span style="color: #4CAF50; background-color: rgba(76, 175, 80, 0.1);"> Component C</span>
+        </label>
+    </div>
+</div>
+
+<style>
+.image-gallery {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0;
+    gap: 3px;
+}
+
+.gallery-group {
+    margin: 0;
+    width: 49%;
+}
+
+.gallery-group-lift-scores {
+    width: 100%;
+}
+
+.image-row {
+    display: flex;
+    gap: 3px;
+}
+
+.gallery-image {
+    width: 20%;
+    object-fit: contain;
+    position: relative;
+    z-index: 1;
+    pointer-events: none;  /* Disable hover by default */
+}
+
+.gallery-image.original,
+.gallery-image.latent,
+.gallery-image.heatmap1,
+.gallery-image.heatmap2,
+.gallery-image.heatmap3,
+.gallery-image.accepted,
+.gallery-image.rejected {
+    pointer-events: auto;  /* Enable hover for these classes */
+    transition: transform 0.2s ease;
+}
+
+/* Make hover work regardless of accepted/rejected state */
+.gallery-image.original:hover,
+.gallery-image.latent:hover,
+.gallery-image.heatmap1:hover,
+.gallery-image.heatmap2:hover,
+.gallery-image.heatmap3:hover {
+    transform: scale(2);
+    z-index: 20;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+.gallery-image.accepted:hover,
+.gallery-image.rejected:hover {
+    transform: scale(4);
+    z-index: 20;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.gallery-image.accepted {
+    border: 2px solid #ddd;
+    border-color: #2196F3;
+    border-radius: 4px;
+    transform: scale(1);
+    transition: transform 0.2s ease;
+}
+
+.gallery-image.rejected {
+    border: 2px solid #ddd;
+    border-color: #FF9800;
+    border-radius: 4px;
+    transform: scale(1);
+    transition: transform 0.2s ease;
+}
+
+.gallery-caption {
+    text-align: center;
+    font-size: 0.9em;
+    margin-top: 5px;
+}
+
+.gallery-image.hidden {
+    visibility: hidden;
+    opacity: 0;
+}
+
+.gallery-image:not(.hidden) {
+    visibility: visible;
+    opacity: 1;
+}
+
+.heatmap1, .heatmap2, .heatmap3 {
+    transform: scale(1);
+    transition: transform 0.2s ease;
+}
+
+.heatmap-active {
+    transform: scale(2);
+    z-index: 10;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+</style>
+
+<script>
+function toggleColumn(columnClass) {
+    const images = document.querySelectorAll(`.gallery-image.${columnClass}`);
+    const isHidden = images[0].classList.contains('hidden');
+    images.forEach(img => {
+        if (isHidden) {
+            img.classList.remove('hidden');
+        } else {
+            img.classList.add('hidden');
+        }
+    });
+}
+</script>
+
+<div class="image-gallery">
+    <figure class="gallery-group gallery-group-lift-scores">
+        <div class="image-row">
+            <img src="images/3objects_lift/a steaming teacup beside an open book and a candle/original_image.png" class="gallery-image original" alt="Original: teacup, book, and candle">
+            <img src="images/3objects_lift/a steaming teacup beside an open book and a candle/latents.png" class="gallery-image latent" alt="Latent representation">
+            <img src="images/3objects_lift/a steaming teacup beside an open book and a candle/heatmap1.png" class="gallery-image heatmap1" alt="Lift score: teacup">
+            <img src="images/3objects_lift/a steaming teacup beside an open book and a candle/heatmap2.png" class="gallery-image heatmap2" alt="Lift score: book">
+            <img src="images/3objects_lift/a steaming teacup beside an open book and a candle/heatmap3.png" class="gallery-image heatmap3" alt="Lift score: candle">
+        </div>
+        <figcaption class="gallery-caption"><span style="color: #F44336; background-color: rgba(244, 67, 54, 0.1);">a steaming teacup</span> beside <span style="color: #FF8F00; background-color: rgba(255, 193, 7, 0.1);">an open book</span> and <span style="color: #4CAF50; background-color: rgba(76, 175, 80, 0.1);">a candle</span></figcaption>
+    </figure>
+</div>
+
+<div class="image-gallery">
+    <figure class="gallery-group gallery-group-lift-scores">
+        <div class="image-row">
+            <img src="images/3objects_lift/a glass bottle with a message drifting past starfish/original_image.png" class="gallery-image original" alt="Original: bottle, message, and starfish">
+            <img src="images/3objects_lift/a glass bottle with a message drifting past starfish/latents.png" class="gallery-image latent" alt="Latent representation">
+            <img src="images/3objects_lift/a glass bottle with a message drifting past starfish/heatmap1.png" class="gallery-image heatmap1" alt="Lift score: bottle">
+            <img src="images/3objects_lift/a glass bottle with a message drifting past starfish/heatmap2.png" class="gallery-image heatmap2" alt="Lift score: message">
+            <img src="images/3objects_lift/a glass bottle with a message drifting past starfish/heatmap3.png" class="gallery-image heatmap3" alt="Lift score: starfish">
+        </div>
+        <figcaption class="gallery-caption"><span style="color: #F44336; background-color: rgba(244, 67, 54, 0.1);">a glass bottle</span> with <span style="color: #FF8F00; background-color: rgba(255, 193, 7, 0.1);">a message</span> drifting past <span style="color: #4CAF50; background-color: rgba(76, 175, 80, 0.1);">starfish</span></figcaption>
+    </figure>
+</div>
+
+<div class="image-gallery">
+    <figure class="gallery-group gallery-group-lift-scores">
+        <div class="image-row">
+            <img src="images/3objects_lift/a wooden ladder reaching into a treehouse under stars/original_image.png" class="gallery-image original" alt="Original: ladder, treehouse, and stars">
+            <img src="images/3objects_lift/a wooden ladder reaching into a treehouse under stars/latents.png" class="gallery-image latent" alt="Latent representation">
+            <img src="images/3objects_lift/a wooden ladder reaching into a treehouse under stars/heatmap1.png" class="gallery-image heatmap1" alt="Lift score: ladder">
+            <img src="images/3objects_lift/a wooden ladder reaching into a treehouse under stars/heatmap2.png" class="gallery-image heatmap2" alt="Lift score: treehouse">
+            <img src="images/3objects_lift/a wooden ladder reaching into a treehouse under stars/heatmap3.png" class="gallery-image heatmap3" alt="Lift score: stars">
+        </div>
+        <figcaption class="gallery-caption"><span style="color: #F44336; background-color: rgba(244, 67, 54, 0.1);">a wooden ladder</span> reaching into <span style="color: #FF8F00; background-color: rgba(255, 193, 7, 0.1);">a treehouse</span> under <span style="color: #4CAF50; background-color: rgba(76, 175, 80, 0.1);">stars</span></figcaption>
+    </figure>
+</div>
+
+<div class="image-gallery">
+    <figure class="gallery-group gallery-group-lift-scores">
+        <div class="image-row">
+            <img src="images/3objects_lift/an old gramophone on a windowsill with falling autumn leaves/original_image.png" class="gallery-image original" alt="Original: gramophone, windowsill, and leaves">
+            <img src="images/3objects_lift/an old gramophone on a windowsill with falling autumn leaves/latents.png" class="gallery-image latent" alt="Latent representation">
+            <img src="images/3objects_lift/an old gramophone on a windowsill with falling autumn leaves/heatmap1.png" class="gallery-image heatmap1" alt="Lift score: gramophone">
+            <img src="images/3objects_lift/an old gramophone on a windowsill with falling autumn leaves/heatmap2.png" class="gallery-image heatmap2" alt="Lift score: windowsill">
+            <img src="images/3objects_lift/an old gramophone on a windowsill with falling autumn leaves/heatmap3.png" class="gallery-image heatmap3" alt="Lift score: leaves">
+        </div>
+        <figcaption class="gallery-caption"><span style="color: #F44336; background-color: rgba(244, 67, 54, 0.1);">an old gramophone</span> on <span style="color: #FF8F00; background-color: rgba(255, 193, 7, 0.1);">a windowsill</span> with <span style="color: #4CAF50; background-color: rgba(76, 175, 80, 0.1);">falling autumn leaves</span></figcaption>
+    </figure>
+</div>
+
+The brighter regions in each visualization indicate where the lift scores are higher for that particular object or concept, showing how CompLift can identify the spatial location of each component in the prompt.
 
 ## 📊 Correlation between Lift Scores and CLIP Scores
 
