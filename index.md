@@ -7,6 +7,152 @@ date:   2020-05-21 15:38:11 -0800
 usemathjax: true
 ---
 
+<!-- Add viewport meta tag for mobile responsiveness -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Mobile-responsive styles for math equations -->
+<style>
+/* Mobile math equation responsiveness */
+@media (max-width: 768px) {
+  /* MathJax display equations */
+  .MathJax_Display {
+    overflow-x: auto;
+    overflow-y: hidden;
+    max-width: 100%;
+    padding: 5px 0;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* MathJax inline equations */
+  .MathJax {
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Reduce font size for math on mobile */
+  .MathJax_Display .MathJax {
+    font-size: 0.9em !important;
+  }
+
+  /* Tables containing math */
+  .math-table {
+    overflow-x: auto;
+    display: block;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .math-table table {
+    min-width: 100%;
+  }
+
+  /* Equation containers */
+  .equation-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 10px 0;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Even smaller font size for very small screens */
+  .MathJax_Display .MathJax {
+    font-size: 0.8em !important;
+  }
+
+  .MathJax {
+    font-size: 0.85em !important;
+  }
+
+  /* Reduce table font size */
+  .math-table {
+    font-size: 0.8em;
+  }
+
+  /* Add scroll hint for long equations */
+  .MathJax_Display::after {
+    content: "← scroll →";
+    display: block;
+    text-align: center;
+    font-size: 0.7em;
+    color: #666;
+    margin-top: 5px;
+    opacity: 0.7;
+  }
+}
+
+/* General responsive improvements for math content */
+.math-table {
+  margin: 20px auto;
+  border-collapse: collapse;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.math-table th,
+.math-table td {
+  padding: 12px 15px;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+}
+
+.math-table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.math-table tr:hover {
+  background-color: #f5f5f5;
+}
+
+/* Mobile table responsiveness */
+@media (max-width: 768px) {
+  .math-table th,
+  .math-table td {
+    padding: 8px 10px;
+    font-size: 0.9em;
+  }
+}
+
+@media (max-width: 480px) {
+  .math-table th,
+  .math-table td {
+    padding: 6px 8px;
+    font-size: 0.8em;
+  }
+}
+
+/* Ensure MathJax equations don't break layout */
+mjx-container {
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  max-width: 100% !important;
+}
+
+/* For MathJax v3 */
+mjx-container[display="true"] {
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  padding: 5px 0 !important;
+}
+
+@media (max-width: 768px) {
+  mjx-container {
+    font-size: 0.9em !important;
+  }
+}
+
+@media (max-width: 480px) {
+  mjx-container {
+    font-size: 0.8em !important;
+  }
+}
+</style>
+
 Diffusion models have revolutionized generative modeling, particularly in producing high-quality images. Yet, when faced with complex prompts involving multiple objects or conditions, they often stumble: generated images might satisfy only part of a prompt or contain inconsistencies.
 
 In our [ICML 2025 paper](https://arxiv.org/abs/2505.13740), we introduce **CompLift**—a lightweight, training-free rejection criterion using **lift scores**—to address this issue.
@@ -126,12 +272,14 @@ $$
 
 In practice, we show that we can approximate Eq. \eqref{eqn:lift} using the internal denoising predictions of the diffusion model itself. Similar techniques can be found in [Diffusion Classifier](https://diffusion-classifier.github.io/).
 
+<div class="equation-container">
 $$
 \begin{equation}
 \text{lift}(x|c) \approx \mathbb{E}_{t,\epsilon}\{||\epsilon-\epsilon_\theta(x_t, \varnothing)||^2-||\epsilon-\epsilon_\theta(x_t, c)||^2\} \tag{2}
 \label{eqn:lift-approx}
 \end{equation}
 $$
+</div>
 
 Note:
 - $$\epsilon_\theta$$ is the diffusion model
@@ -343,21 +491,25 @@ One would notice that the above implementation is similar to the [classifier-fre
 
 CompLift solves the *primal problem* - the sampler tries to generate samples that satisfy the ground truth condition.
 
+<div class="equation-container">
 $$
 \begin{aligned}
 & x_0 \sim p_{\text{generator}}(x_0), \quad \text{s.t. } p(x_0 \mid c_i) > p(x_0), \quad \forall c_i, \\
 \Leftrightarrow \quad & x_0 \sim p_{\text{generator}}(x_0), \quad \text{s.t. } \text{lift}(x_0 \mid c_i) > 0, \quad \forall c_i.
 \end{aligned}
 $$
+</div>
 
 CFG / Composable Diffusion solves the *dual problem* - the sampler tries to generate samples that are close to the ground truth condition and keeps a balance using the Lagrangian coefficient $$\lambda_i$$.
 
+<div class="equation-container">
 $$
 \begin{aligned}
 & \mathcal{L}(x_0, \lambda) = \log p_{\text{generator}}(x_0) + \sum_{c_i} \lambda_i \Bigl( \log p(x_0 \mid c_i) - \log p(x_0) \Bigr), \quad \lambda_i \geq 0, \\
 \Rightarrow & \nabla_{x_t} \mathcal{L}(x_0, \lambda) \approx \epsilon_\theta(x_t, \varnothing) + \sum_{c_i} \lambda_i \Bigl( \epsilon_\theta(x_t, c_i) - \epsilon_\theta(x_t, \varnothing) \Bigr), \quad \lambda_i \geq 0.
 \end{aligned}
 $$
+</div>
 
 Note:
 - CFG / Composable Diffusion often sets the Lagrangian coefficient $$\lambda_i$$ as a fixed weight value $$w$$.
@@ -841,16 +993,64 @@ We investigate the empirical correlation between the lift scores and the CLIP sc
 <style>
 .scatter-container {
   position: relative;
-  width: 800px;
-  height: 500px;
   margin: 20px auto;
-}
-
-.scatter-plot {
+  padding: 10px;
   border: 2px solid rgba(255,255,255,0.3);
   background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(240,248,255,0.95) 100%);
   border-radius: 10px;
   backdrop-filter: blur(10px);
+  /* Mobile responsive styles */
+  width: 100%;
+  max-width: 820px;
+  overflow-x: auto;
+  box-sizing: border-box;
+}
+
+/* Mobile-specific styles */
+@media (max-width: 768px) {
+  .scatter-container {
+    margin: 10px;
+    padding: 5px;
+    overflow-x: scroll;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .scatter-plot {
+    min-width: 600px; /* Minimum width to prevent cramping */
+  }
+
+  .axis-label {
+    font-size: 12px !important;
+  }
+
+  .axis text {
+    font-size: 10px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .scatter-container {
+    margin: 5px;
+    padding: 3px;
+  }
+
+  .scatter-plot {
+    min-width: 500px;
+  }
+
+  .axis-label {
+    font-size: 10px !important;
+  }
+
+  .axis text {
+    font-size: 8px !important;
+  }
+
+  /* Smaller hover images on mobile */
+  .image-overlay {
+    width: 100px !important;
+    height: 100px !important;
+  }
 }
 
 .axis-label {
@@ -922,6 +1122,23 @@ We investigate the empirical correlation between the lift scores and the CLIP sc
   max-width: 280px;
 }
 
+/* Mobile tooltip adjustments */
+@media (max-width: 768px) {
+  .tooltip {
+    max-width: 200px;
+    padding: 10px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .tooltip {
+    max-width: 150px;
+    padding: 8px;
+    font-size: 10px;
+  }
+}
+
 .tooltip img {
   width: 220px;
   height: 220px;
@@ -930,6 +1147,21 @@ We investigate the empirical correlation between the lift scores and the CLIP sc
   margin-bottom: 8px;
   border-radius: 8px;
   border: 2px solid rgba(59, 130, 246, 0.3);
+}
+
+/* Mobile tooltip image adjustments */
+@media (max-width: 768px) {
+  .tooltip img {
+    width: 150px;
+    height: 150px;
+  }
+}
+
+@media (max-width: 480px) {
+  .tooltip img {
+    width: 100px;
+    height: 100px;
+  }
 }
 
 .tooltip div {
@@ -942,6 +1174,21 @@ We investigate the empirical correlation between the lift scores and the CLIP sc
   border-radius: 20px;
   font-weight: 600;
   box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+/* Mobile tooltip text adjustments */
+@media (max-width: 768px) {
+  .tooltip div {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .tooltip div {
+    font-size: 9px;
+    padding: 3px 6px;
+  }
 }
 
 /* Grid lines for better readability */
@@ -957,10 +1204,46 @@ We investigate the empirical correlation between the lift scores and the CLIP sc
 </style>
 
 <div class="scatter-container">
-  <svg class="scatter-plot" width="800" height="500"></svg>
+  <svg class="scatter-plot"></svg>
   <div id="tooltip" class="tooltip"></div>
   <div id="image-overlay-container"></div>
 </div>
+
+<!-- Mobile interaction hint -->
+<div class="mobile-hint">
+  <p><strong>💡 Mobile Tip:</strong> Tap any point to view the enlarged image. On mobile, you can scroll horizontally to see the full chart.</p>
+</div>
+
+<style>
+.mobile-hint {
+  display: none;
+  text-align: center;
+  margin: 10px auto;
+  padding: 10px;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(147, 51, 234, 0.1) 100%);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 8px;
+  font-size: 14px;
+  color: #374151;
+  max-width: 600px;
+}
+
+@media (max-width: 768px) {
+  .mobile-hint {
+    display: block;
+    font-size: 12px;
+    margin: 5px;
+    padding: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .mobile-hint {
+    font-size: 11px;
+    padding: 6px;
+  }
+}
+</style>
 
 <script src="https://d3js.org/d3.v7.min.js"></script>
 <script>
@@ -970,14 +1253,41 @@ const data = {
   activatedPixels: [246.0, 606.0, 204.0, 440.0, 69.0, 886.0, 327.0, 52.0, 19.0, 225.0, 1079.0, 451.0, 30.0, 23.0, 2.0, 234.0, 659.0, 867.0, 151.0, 34.0, 196.0, 9.0, 677.0, 9.0, 37.0, 994.0, 529.0, 19.0, 89.0, 660.0, 1127.0, 408.0, 232.0, 643.0, 34.0, 718.0, 468.0, 405.0, 770.0, 973.0, 31.0, 836.0, 27.0, 9.0, 654.0, 187.0, 27.0, 963.0, 444.0, 927.0, 15.0, 863.0, 39.0, 33.0, 20.0, 525.0, 270.0, 106.0, 41.0, 451.0, 1041.0, 2.0, 6.0, 149.0, 17.0, 75.0, 440.0, 168.0, 135.0, 740.0, 13.0, 182.0, 635.0, 397.0, 295.0, 93.0, 544.0, 483.0, 380.0, 16.0, 703.0, 4.0, 155.0, 3.0, 767.0, 40.0, 862.0, 115.0, 3.0, 779.0, 86.0, 713.0, 1.0]
 };
 
-document.addEventListener('DOMContentLoaded', function() {
-  // Set up dimensions
-  const margin = { top: 40, right: 40, bottom: 60, left: 60 };
-  const width = 800 - margin.left - margin.right;
-  const height = 500 - margin.top - margin.bottom;
+function createScatterPlot() {
+  // Clear any existing content
+  d3.select('.scatter-plot').selectAll('*').remove();
 
-  // Create SVG
+  // Get container dimensions dynamically
+  const container = document.querySelector('.scatter-container');
+  const containerWidth = container.clientWidth;
+  const isMobile = window.innerWidth <= 768;
+  const isSmallMobile = window.innerWidth <= 480;
+
+  // Set responsive dimensions
+  let svgWidth, svgHeight;
+  if (isSmallMobile) {
+    svgWidth = Math.max(500, containerWidth - 20);
+    svgHeight = 400;
+  } else if (isMobile) {
+    svgWidth = Math.max(600, containerWidth - 20);
+    svgHeight = 450;
+  } else {
+    svgWidth = Math.min(800, containerWidth - 20);
+    svgHeight = 500;
+  }
+
+  // Set up responsive margins
+  const margin = isMobile ?
+    { top: 30, right: 30, bottom: 50, left: 50 } :
+    { top: 40, right: 40, bottom: 60, left: 60 };
+
+  const width = svgWidth - margin.left - margin.right;
+  const height = svgHeight - margin.top - margin.bottom;
+
+  // Update SVG dimensions
   const svg = d3.select('.scatter-plot')
+    .attr('width', svgWidth)
+    .attr('height', svgHeight)
     .append('g')
     .attr('transform', `translate(${margin.left},${margin.top})`);
 
@@ -1013,10 +1323,11 @@ document.addEventListener('DOMContentLoaded', function() {
     .attr('class', 'grid')
     .call(yGrid);
 
-  // Create axes
+  // Create axes with responsive tick count
   const xAxis = d3.axisBottom(x)
-    .tickValues(x.ticks().filter(d => d >= 0));
-  const yAxis = d3.axisLeft(y);
+    .tickValues(x.ticks(isMobile ? 5 : 8).filter(d => d >= 0));
+  const yAxis = d3.axisLeft(y)
+    .ticks(isMobile ? 5 : 8);
 
   // Add axes
   svg.append('g')
@@ -1028,12 +1339,12 @@ document.addEventListener('DOMContentLoaded', function() {
     .attr('class', 'y axis')
     .call(yAxis);
 
-  // Add axis labels
+  // Add axis labels with responsive positioning
   const xLabel = svg.append('text')
     .attr('class', 'axis-label')
     .attr('text-anchor', 'middle')
     .attr('x', width / 2)
-    .attr('y', height + margin.bottom - 10);
+    .attr('y', height + (isMobile ? 35 : 45));
 
   xLabel.append('tspan')
     .text('#Activated Pixels of ');
@@ -1047,7 +1358,7 @@ document.addEventListener('DOMContentLoaded', function() {
     .attr('text-anchor', 'middle')
     .attr('transform', 'rotate(-90)')
     .attr('x', -height / 2)
-    .attr('y', -margin.left + 20);
+    .attr('y', -(isMobile ? 35 : 45));
 
   yLabel.append('tspan')
     .text('CLIP Score of ');
@@ -1055,6 +1366,11 @@ document.addEventListener('DOMContentLoaded', function() {
   yLabel.append('tspan')
     .style('font-style', 'italic')
     .text('A White Clock');
+
+  // Responsive point sizes
+  const pointRadius = isMobile ? 12 : 18;
+  const pointImageSize = isMobile ? 20 : 30;
+  const hoverAreaSize = isMobile ? 35 : 50;
 
   // Create points as images with colored borders
   const points = svg.selectAll('.point')
@@ -1073,34 +1389,34 @@ document.addEventListener('DOMContentLoaded', function() {
   // Add colored border circle
   points.append('circle')
     .attr('class', 'point-border')
-    .attr('r', 18)
+    .attr('r', pointRadius)
     .attr('stroke', d => d.color)
-    .attr('stroke-width', 3)
+    .attr('stroke-width', isMobile ? 2 : 3)
     .attr('fill', 'none');
 
   // Add invisible larger hover area
   points.append('rect')
-    .attr('x', -25)
-    .attr('y', -25)
-    .attr('width', 50)
-    .attr('height', 50)
+    .attr('x', -hoverAreaSize/2)
+    .attr('y', -hoverAreaSize/2)
+    .attr('width', hoverAreaSize)
+    .attr('height', hoverAreaSize)
     .style('fill', 'transparent')
     .style('cursor', 'pointer');
 
   // Add the actual image
   points.append('image')
     .attr('class', 'point')
-    .attr('x', -15)
-    .attr('y', -15)
-    .attr('width', 30)
-    .attr('height', 30)
+    .attr('x', -pointImageSize/2)
+    .attr('y', -pointImageSize/2)
+    .attr('width', pointImageSize)
+    .attr('height', pointImageSize)
     .attr('href', d => `./images/${d.image}`)
     .style('border-radius', '50%')
     .style('opacity', 0.95)
     .style('pointer-events', 'none')
-    .attr('clip-path', 'circle(15px at 15px 15px)');
+    .attr('clip-path', `circle(${pointImageSize/2}px at ${pointImageSize/2}px ${pointImageSize/2}px)`);
 
-  // Handle hover for image scaling
+  // Handle hover for image scaling with mobile optimization
   points.on('mouseover', function(event, d) {
     const pointGroup = d3.select(this);
     const border = pointGroup.select('.point-border');
@@ -1113,19 +1429,20 @@ document.addEventListener('DOMContentLoaded', function() {
     const overlay = document.createElement('img');
     overlay.className = 'image-overlay';
     overlay.src = `./images/${d.image}`;
-    overlay.style.width = '150px';
-    overlay.style.height = '150px';
-    overlay.style.border = `4px solid ${d.color}`;
-    overlay.style.filter = `drop-shadow(0 0 20px ${d.color})`;
+
+    // Responsive overlay size
+    const overlaySize = isSmallMobile ? 100 : (isMobile ? 120 : 150);
+    overlay.style.width = overlaySize + 'px';
+    overlay.style.height = overlaySize + 'px';
+    overlay.style.border = `${isMobile ? 3 : 4}px solid ${d.color}`;
+    overlay.style.filter = `drop-shadow(0 0 ${isMobile ? 15 : 20}px ${d.color})`;
 
     // Position the overlay at the point location
-    const svgRect = document.querySelector('.scatter-plot').getBoundingClientRect();
-    const containerRect = document.querySelector('.scatter-container').getBoundingClientRect();
-    const pointX = x(d.x) + 60; // 60 is the left margin
-    const pointY = y(d.y) + 40; // 40 is the top margin
+    const pointX = x(d.x) + margin.left;
+    const pointY = y(d.y) + margin.top;
 
-    overlay.style.left = (pointX - 75) + 'px'; // Center the 150px image
-    overlay.style.top = (pointY - 75) + 'px';
+    overlay.style.left = (pointX - overlaySize/2) + 'px';
+    overlay.style.top = (pointY - overlaySize/2) + 'px';
 
     container.appendChild(overlay);
 
@@ -1137,8 +1454,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Animate border glow effect
     border.transition()
       .duration(300)
-      .attr('stroke-width', 5)
-      .style('filter', `drop-shadow(0 0 15px ${d.color})`);
+      .attr('stroke-width', isMobile ? 3 : 5)
+      .style('filter', `drop-shadow(0 0 ${isMobile ? 10 : 15}px ${d.color})`);
   })
   .on('mouseout', function(event, d) {
     const border = d3.select(this).select('.point-border');
@@ -1155,8 +1472,89 @@ document.addEventListener('DOMContentLoaded', function() {
     // Animate border back to normal
     border.transition()
       .duration(250)
-      .attr('stroke-width', 3)
+      .attr('stroke-width', isMobile ? 2 : 3)
       .style('filter', 'none');
+  })
+  // Add touch events for mobile devices
+  .on('touchstart', function(event, d) {
+    event.preventDefault(); // Prevent default touch behavior
+
+    const pointGroup = d3.select(this);
+    const border = pointGroup.select('.point-border');
+
+    // Bring to front
+    this.parentNode.appendChild(this);
+
+    // Create HTML overlay for enlarged image
+    const container = document.getElementById('image-overlay-container');
+
+    // Remove any existing overlays first
+    const existingOverlays = container.querySelectorAll('.image-overlay');
+    existingOverlays.forEach(overlay => {
+      if (overlay.parentNode) {
+        overlay.parentNode.removeChild(overlay);
+      }
+    });
+
+    const overlay = document.createElement('img');
+    overlay.className = 'image-overlay';
+    overlay.src = `./images/${d.image}`;
+
+    // Responsive overlay size for touch
+    const overlaySize = isSmallMobile ? 120 : (isMobile ? 140 : 170);
+    overlay.style.width = overlaySize + 'px';
+    overlay.style.height = overlaySize + 'px';
+    overlay.style.border = `${isMobile ? 3 : 4}px solid ${d.color}`;
+    overlay.style.filter = `drop-shadow(0 0 ${isMobile ? 15 : 20}px ${d.color})`;
+
+    // Position the overlay at the point location
+    const pointX = x(d.x) + margin.left;
+    const pointY = y(d.y) + margin.top;
+
+    overlay.style.left = (pointX - overlaySize/2) + 'px';
+    overlay.style.top = (pointY - overlaySize/2) + 'px';
+
+    container.appendChild(overlay);
+
+    // Trigger the animation
+    setTimeout(() => {
+      overlay.classList.add('visible');
+    }, 10);
+
+    // Animate border glow effect
+    border.transition()
+      .duration(300)
+      .attr('stroke-width', isMobile ? 4 : 6)
+      .style('filter', `drop-shadow(0 0 ${isMobile ? 12 : 18}px ${d.color})`);
+
+    // Auto-hide after 3 seconds on mobile
+    setTimeout(() => {
+      const container = document.getElementById('image-overlay-container');
+      const overlays = container.querySelectorAll('.image-overlay');
+      overlays.forEach(overlay => {
+        if (overlay.parentNode) {
+          overlay.parentNode.removeChild(overlay);
+        }
+      });
+
+      border.transition()
+        .duration(250)
+        .attr('stroke-width', isMobile ? 2 : 3)
+        .style('filter', 'none');
+    }, 3000);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  createScatterPlot();
+
+  // Add resize listener for responsive behavior
+  let resizeTimeout;
+  window.addEventListener('resize', function() {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(function() {
+      createScatterPlot();
+    }, 250);
   });
 });
 </script>
@@ -1180,3 +1578,56 @@ While we've focused on image generation, the principles behind lift scores may a
 ## 📄 Paper
 
 > [Chenning Yu](https://rainorangelemon.github.io/) and [Sicun Gao](https://scungao.github.io/). *Improving Compositional Generation with Diffusion Models Using Lift Scores*. ICML 2025. [[ArXiv](https://arxiv.org/abs/2505.13740)] [[GitHub](https://github.com/rainorangelemon/complift)]
+
+<!-- MathJax configuration for mobile responsiveness -->
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true,
+    processEnvironments: true
+  },
+  options: {
+    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  },
+  svg: {
+    fontCache: 'global',
+    scale: 1,
+    minScale: 0.5,
+    matchFontHeight: false
+  },
+  startup: {
+    ready() {
+      MathJax.startup.defaultReady();
+      // Add mobile-specific handling after MathJax loads
+      if (window.innerWidth <= 768) {
+        setTimeout(function() {
+          // Make equations scrollable on mobile
+          const displays = document.querySelectorAll('mjx-container[display="true"]');
+          displays.forEach(function(display) {
+            display.style.overflowX = 'auto';
+            display.style.overflowY = 'hidden';
+            display.style.maxWidth = '100%';
+            display.style.webkitOverflowScrolling = 'touch';
+          });
+
+          // Add scroll indicators for long equations
+          const longEquations = Array.from(displays).filter(eq => eq.scrollWidth > eq.clientWidth);
+          longEquations.forEach(function(eq) {
+            if (!eq.querySelector('.scroll-hint')) {
+              const hint = document.createElement('div');
+              hint.className = 'scroll-hint';
+              hint.textContent = '← scroll →';
+              hint.style.cssText = 'text-align: center; font-size: 0.7em; color: #666; margin-top: 5px; opacity: 0.7;';
+              eq.parentNode.insertBefore(hint, eq.nextSibling);
+            }
+          });
+        }, 1000);
+      }
+    }
+  }
+};
+</script>
