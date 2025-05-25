@@ -838,7 +838,328 @@ The brighter regions in each visualization indicate where the lift scores are hi
 
 We investigate the empirical correlation between the lift scores and the CLIP scores of the generated images. Here we evaluate the CLIP scores and the number of activated pixels (pixels with positive lift scores) for each generated image with the prompt "a black car and a white clock".
 
-![correlation between lift scores and CLIP scores](images/correlation.png)
+<style>
+.scatter-container {
+  position: relative;
+  width: 800px;
+  height: 500px;
+  margin: 20px auto;
+}
+
+.scatter-plot {
+  border: 2px solid rgba(255,255,255,0.3);
+  background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(240,248,255,0.95) 100%);
+  border-radius: 10px;
+  backdrop-filter: blur(10px);
+}
+
+.axis-label {
+  font-family: 'Arial', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  fill: #2c3e50;
+}
+
+.axis path,
+.axis line {
+  stroke: #34495e;
+  stroke-width: 2;
+  shape-rendering: crispEdges;
+}
+
+.axis text {
+  fill: #2c3e50;
+  font-weight: 500;
+}
+
+.point {
+  cursor: pointer;
+}
+
+.point-group {
+  transition: all 0.3s ease-out;
+  filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
+}
+
+.point {
+  transition: all 0.3s ease-out;
+}
+
+.point-border {
+  stroke-width: 3;
+  fill: none;
+  transition: all 0.3s ease-out;
+  filter: drop-shadow(0 0 8px currentColor);
+}
+
+.image-overlay {
+  position: absolute;
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0;
+  transition: all 0.3s ease;
+  border-radius: 50%;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  transform-origin: center center;
+}
+
+.image-overlay.visible {
+  opacity: 1;
+}
+
+.tooltip {
+  position: absolute;
+  padding: 15px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(248,250,252,0.95) 100%);
+  border: 2px solid rgba(59, 130, 246, 0.5);
+  border-radius: 12px;
+  pointer-events: none;
+  opacity: 0;
+  transition: all 0.3s ease;
+  z-index: 100;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  backdrop-filter: blur(10px);
+  max-width: 280px;
+}
+
+.tooltip img {
+  width: 220px;
+  height: 220px;
+  object-fit: contain;
+  display: block;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  border: 2px solid rgba(59, 130, 246, 0.3);
+}
+
+.tooltip div {
+  font-size: 13px;
+  margin: 4px 0;
+  text-align: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+/* Grid lines for better readability */
+.grid line {
+  stroke: rgba(52, 73, 94, 0.1);
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+
+.grid path {
+  stroke-width: 0;
+}
+</style>
+
+<div class="scatter-container">
+  <svg class="scatter-plot" width="800" height="500"></svg>
+  <div id="tooltip" class="tooltip"></div>
+  <div id="image-overlay-container"></div>
+</div>
+
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script>
+const data = {
+  images: ['88.jpg', '35.jpg', '7.jpg', '87.jpg', '31.jpg', '46.jpg', '23.jpg', '21.jpg', '63.jpg', '14.jpg', '11.jpg', '22.jpg', '26.jpg', '16.jpg', '50.jpg', '4.jpg', '32.jpg', '59.jpg', '92.jpg', '24.jpg', '12.jpg', '18.jpg', '55.jpg', '60.jpg', '70.jpg', '80.jpg', '43.jpg', '57.jpg', '95.jpg', '56.jpg', '71.jpg', '79.jpg', '28.jpg', '90.jpg', '76.jpg', '94.jpg', '13.jpg', '15.jpg', '64.jpg', '77.jpg', '93.jpg', '61.jpg', '81.jpg', '25.jpg', '36.jpg', '84.jpg', '53.jpg', '67.jpg', '85.jpg', '20.jpg', '30.jpg', '48.jpg', '3.jpg', '19.jpg', '5.jpg', '1.jpg', '89.jpg', '58.jpg', '82.jpg', '66.jpg', '98.jpg', '8.jpg', '47.jpg', '65.jpg', '37.jpg', '33.jpg', '42.jpg', '40.jpg', '41.jpg', '86.jpg', '38.jpg', '74.jpg', '78.jpg', '91.jpg', '69.jpg', '2.jpg', '27.jpg', '72.jpg', '62.jpg', '73.jpg', '9.jpg', '6.jpg', '10.jpg', '0.jpg', '52.jpg', '96.jpg', '97.jpg', '39.jpg', '45.jpg', '68.jpg', '51.jpg', '75.jpg', '17.jpg'],
+  clipScores: [0.2082290351390838, 0.2949512004852295, 0.2657198905944824, 0.2660695314407348, 0.2530303001403808, 0.2318295538425445, 0.2551944255828857, 0.2188099771738052, 0.1750942766666412, 0.2713091373443603, 0.2937318980693817, 0.265780508518219, 0.1947014331817627, 0.1975520253181457, 0.2133774906396865, 0.2024672031402588, 0.2555937170982361, 0.2589658200740814, 0.2226685732603073, 0.1990541517734527, 0.2009880542755127, 0.2267373353242874, 0.2683018445968628, 0.2158290147781372, 0.1944620758295059, 0.2793134748935699, 0.251570463180542, 0.1823183596134185, 0.2277110069990158, 0.2718529105186462, 0.291670024394989, 0.2543158531188965, 0.2475530952215194, 0.2996455132961273, 0.1895356774330139, 0.2617505490779876, 0.2404685020446777, 0.2660462856292724, 0.2602310180664062, 0.2819329500198364, 0.1705629974603653, 0.2513225078582763, 0.1969276815652847, 0.1969461441040039, 0.2454052567481994, 0.2611884772777557, 0.1960837095975875, 0.2979300022125244, 0.2539918720722198, 0.2535290122032165, 0.1857627779245376, 0.2713980674743652, 0.1906308233737945, 0.2046535015106201, 0.2049099802970886, 0.2565841972827911, 0.2644965946674347, 0.1875859797000885, 0.1800371408462524, 0.2340931445360183, 0.2940186858177185, 0.1918868571519851, 0.1842844784259796, 0.2144172042608261, 0.2099960744380951, 0.1845736354589462, 0.2939673960208893, 0.2667993903160095, 0.207839161157608, 0.2725541591644287, 0.2229276895523071, 0.2478901147842407, 0.2838332653045654, 0.2315225303173065, 0.2619037926197052, 0.2052745521068573, 0.2469722181558609, 0.2682026624679565, 0.2642577290534973, 0.2312282919883728, 0.2764683961868286, 0.1939019858837127, 0.2015535235404968, 0.1811759024858474, 0.2621297836303711, 0.208440363407135, 0.275995671749115, 0.220633178949356, 0.1831966340541839, 0.2715634703636169, 0.2046765089035034, 0.2397863119840622, 0.1808712482452392],
+  activatedPixels: [246.0, 606.0, 204.0, 440.0, 69.0, 886.0, 327.0, 52.0, 19.0, 225.0, 1079.0, 451.0, 30.0, 23.0, 2.0, 234.0, 659.0, 867.0, 151.0, 34.0, 196.0, 9.0, 677.0, 9.0, 37.0, 994.0, 529.0, 19.0, 89.0, 660.0, 1127.0, 408.0, 232.0, 643.0, 34.0, 718.0, 468.0, 405.0, 770.0, 973.0, 31.0, 836.0, 27.0, 9.0, 654.0, 187.0, 27.0, 963.0, 444.0, 927.0, 15.0, 863.0, 39.0, 33.0, 20.0, 525.0, 270.0, 106.0, 41.0, 451.0, 1041.0, 2.0, 6.0, 149.0, 17.0, 75.0, 440.0, 168.0, 135.0, 740.0, 13.0, 182.0, 635.0, 397.0, 295.0, 93.0, 544.0, 483.0, 380.0, 16.0, 703.0, 4.0, 155.0, 3.0, 767.0, 40.0, 862.0, 115.0, 3.0, 779.0, 86.0, 713.0, 1.0]
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Set up dimensions
+  const margin = { top: 40, right: 40, bottom: 60, left: 60 };
+  const width = 800 - margin.left - margin.right;
+  const height = 500 - margin.top - margin.bottom;
+
+  // Create SVG
+  const svg = d3.select('.scatter-plot')
+    .append('g')
+    .attr('transform', `translate(${margin.left},${margin.top})`);
+
+  // Create scales
+  const x = d3.scaleLinear()
+    .domain([-40, d3.max(data.activatedPixels)])
+    .range([0, width]);
+
+  const y = d3.scaleLinear()
+    .domain([d3.min(data.clipScores)-0.01, 0.003+d3.max(data.clipScores)])
+    .range([height, 0]);
+
+  // Color scale for CLIP scores (from red to green)
+  const colorScale = d3.scaleSequential(d3.interpolateViridis)
+    .domain([d3.min(data.clipScores), d3.max(data.clipScores)]);
+
+  // Add grid lines
+  const xGrid = d3.axisBottom(x)
+    .tickSize(-height)
+    .tickFormat('')
+    .tickValues(x.ticks().filter(d => d >= 0));
+
+  const yGrid = d3.axisLeft(y)
+    .tickSize(-width)
+    .tickFormat('');
+
+  svg.append('g')
+    .attr('class', 'grid')
+    .attr('transform', `translate(0,${height})`)
+    .call(xGrid);
+
+  svg.append('g')
+    .attr('class', 'grid')
+    .call(yGrid);
+
+  // Create axes
+  const xAxis = d3.axisBottom(x)
+    .tickValues(x.ticks().filter(d => d >= 0));
+  const yAxis = d3.axisLeft(y);
+
+  // Add axes
+  svg.append('g')
+    .attr('class', 'x axis')
+    .attr('transform', `translate(0,${height})`)
+    .call(xAxis);
+
+  svg.append('g')
+    .attr('class', 'y axis')
+    .call(yAxis);
+
+  // Add axis labels
+  const xLabel = svg.append('text')
+    .attr('class', 'axis-label')
+    .attr('text-anchor', 'middle')
+    .attr('x', width / 2)
+    .attr('y', height + margin.bottom - 10);
+
+  xLabel.append('tspan')
+    .text('#Activated Pixels of ');
+
+  xLabel.append('tspan')
+    .style('font-style', 'italic')
+    .text('A White Clock');
+
+  const yLabel = svg.append('text')
+    .attr('class', 'axis-label')
+    .attr('text-anchor', 'middle')
+    .attr('transform', 'rotate(-90)')
+    .attr('x', -height / 2)
+    .attr('y', -margin.left + 20);
+
+  yLabel.append('tspan')
+    .text('CLIP Score of ');
+
+  yLabel.append('tspan')
+    .style('font-style', 'italic')
+    .text('A White Clock');
+
+  // Create points as images with colored borders
+  const points = svg.selectAll('.point')
+    .data(data.activatedPixels.map((d, i) => ({
+      x: d,
+      y: data.clipScores[i],
+      image: data.images[i],
+      index: i,
+      color: colorScale(data.clipScores[i])
+    })))
+    .enter()
+    .append('g')
+    .attr('class', 'point-group')
+    .attr('transform', d => `translate(${x(d.x)}, ${y(d.y)})`);
+
+  // Add colored border circle
+  points.append('circle')
+    .attr('class', 'point-border')
+    .attr('r', 18)
+    .attr('stroke', d => d.color)
+    .attr('stroke-width', 3)
+    .attr('fill', 'none');
+
+  // Add invisible larger hover area
+  points.append('rect')
+    .attr('x', -25)
+    .attr('y', -25)
+    .attr('width', 50)
+    .attr('height', 50)
+    .style('fill', 'transparent')
+    .style('cursor', 'pointer');
+
+  // Add the actual image
+  points.append('image')
+    .attr('class', 'point')
+    .attr('x', -15)
+    .attr('y', -15)
+    .attr('width', 30)
+    .attr('height', 30)
+    .attr('href', d => `./images/${d.image}`)
+    .style('border-radius', '50%')
+    .style('opacity', 0.95)
+    .style('pointer-events', 'none')
+    .attr('clip-path', 'circle(15px at 15px 15px)');
+
+  // Handle hover for image scaling
+  points.on('mouseover', function(event, d) {
+    const pointGroup = d3.select(this);
+    const border = pointGroup.select('.point-border');
+
+    // Bring to front
+    this.parentNode.appendChild(this);
+
+    // Create HTML overlay for enlarged image
+    const container = document.getElementById('image-overlay-container');
+    const overlay = document.createElement('img');
+    overlay.className = 'image-overlay';
+    overlay.src = `./images/${d.image}`;
+    overlay.style.width = '150px';
+    overlay.style.height = '150px';
+    overlay.style.border = `4px solid ${d.color}`;
+    overlay.style.filter = `drop-shadow(0 0 20px ${d.color})`;
+
+    // Position the overlay at the point location
+    const svgRect = document.querySelector('.scatter-plot').getBoundingClientRect();
+    const containerRect = document.querySelector('.scatter-container').getBoundingClientRect();
+    const pointX = x(d.x) + 60; // 60 is the left margin
+    const pointY = y(d.y) + 40; // 40 is the top margin
+
+    overlay.style.left = (pointX - 75) + 'px'; // Center the 150px image
+    overlay.style.top = (pointY - 75) + 'px';
+
+    container.appendChild(overlay);
+
+    // Trigger the animation
+    setTimeout(() => {
+      overlay.classList.add('visible');
+    }, 10);
+
+    // Animate border glow effect
+    border.transition()
+      .duration(300)
+      .attr('stroke-width', 5)
+      .style('filter', `drop-shadow(0 0 15px ${d.color})`);
+  })
+  .on('mouseout', function(event, d) {
+    const border = d3.select(this).select('.point-border');
+
+    // Remove HTML overlay
+    const container = document.getElementById('image-overlay-container');
+    const overlays = container.querySelectorAll('.image-overlay');
+    overlays.forEach(overlay => {
+      if (overlay.parentNode) {
+        overlay.parentNode.removeChild(overlay);
+      }
+    });
+
+    // Animate border back to normal
+    border.transition()
+      .duration(250)
+      .attr('stroke-width', 3)
+      .style('filter', 'none');
+  });
+});
+</script>
 
 ## 🧰 Get Started
 
