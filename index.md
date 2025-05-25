@@ -90,6 +90,8 @@ usemathjax: true
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   border-radius: 8px;
   overflow: hidden;
+  width: auto;
+  max-width: 100%;
 }
 
 .math-table th,
@@ -111,18 +113,75 @@ usemathjax: true
 
 /* Mobile table responsiveness */
 @media (max-width: 768px) {
+  .math-table {
+    width: 100% !important;
+    margin: 10px 0;
+    font-size: 0.9em;
+    border-radius: 6px;
+  }
+
+  /* Make table container full width on mobile */
+  div[style*="display: table"] {
+    display: block !important;
+    width: 100% !important;
+    margin: 10px 0 !important;
+  }
+
   .math-table th,
   .math-table td {
-    padding: 8px 10px;
-    font-size: 0.9em;
+    padding: 10px 8px;
+    font-size: 1em;
+  }
+
+  /* Make the table container full width on mobile */
+  .math-table th:first-child,
+  .math-table td:first-child {
+    padding-left: 12px;
+  }
+
+  .math-table th:last-child,
+  .math-table td:last-child {
+    padding-right: 12px;
   }
 }
 
 @media (max-width: 480px) {
+  .math-table {
+    width: 100% !important;
+    margin: 8px 0;
+    font-size: 0.85em;
+    border-radius: 4px;
+  }
+
+  /* Ensure container takes full width on small mobile */
+  div[style*="display: table"] {
+    display: block !important;
+    width: 100% !important;
+    margin: 8px 0 !important;
+    padding: 0 5px;
+  }
+
   .math-table th,
   .math-table td {
-    padding: 6px 8px;
-    font-size: 0.8em;
+    padding: 8px 6px;
+    font-size: 1em;
+    line-height: 1.3;
+  }
+
+  /* Adjust column widths for better mobile display */
+  .math-table th:nth-child(1),
+  .math-table td:nth-child(1) {
+    width: 25%;
+  }
+
+  .math-table th:nth-child(2),
+  .math-table td:nth-child(2) {
+    width: 30%;
+  }
+
+  .math-table th:nth-child(3),
+  .math-table td:nth-child(3) {
+    width: 45%;
   }
 }
 
