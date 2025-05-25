@@ -842,7 +842,7 @@ We investigate the empirical correlation between the lift scores and the CLIP sc
 
 ## 🧰 Get Started
 
-Want to try it out?
+Want to try it? Check out our [GitHub repo](https://github.com/rainorangelemon/complift-t2i)!
 
 ```bash
 git clone https://github.com/rainorangelemon/complift-t2i
