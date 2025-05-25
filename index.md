@@ -1637,6 +1637,14 @@ While we've focused on image generation, the principles behind lift scores may a
 ## 📄 Paper
 
 > [Chenning Yu](https://rainorangelemon.github.io/) and [Sicun Gao](https://scungao.github.io/). *Improving Compositional Generation with Diffusion Models Using Lift Scores*. ICML 2025. [[ArXiv](https://arxiv.org/abs/2505.13740)] [[GitHub](https://github.com/rainorangelemon/complift)]
+> ```bibtex
+> @inproceedings{yu2025improving,
+>  title={Improving Compositional Generation with Diffusion Models Using Lift Scores},
+>  author={Yu, Chenning and Gao, Sicun},
+>  booktitle={Proceedings of the 42nd International Conference on Machine Learning (ICML)},
+>  year={2025}
+> }
+> ```
 
 <!-- MathJax configuration for mobile responsiveness -->
 <script>
