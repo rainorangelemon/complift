@@ -832,17 +832,21 @@ function toggleColumn(columnClass) {
     </figure>
 </div>
 
-The brighter regions in each visualization indicate where the lift scores are higher for that particular object or concept, showing how CompLift can identify the spatial location of each component in the prompt.
+The brighter regions in each visualization indicate where the lift scores are higher for that particular object or concept, showing how CompLift can identify the spatial location of each component in the prompt. Pixels with negative lift scores are masked and shown in black.
 
 ## 📊 Correlation between Lift Scores and CLIP Scores
+
+We investigate the empirical correlation between the lift scores and the CLIP scores of the generated images. Here we evaluate the CLIP scores and the number of activated pixels (pixels with positive lift scores) for each generated image with the prompt "a black car and a white clock".
+
+![correlation between lift scores and CLIP scores](images/correlation.png)
 
 ## 🧰 Get Started
 
 Want to try it out?
 
 ```bash
-git clone https://github.com/rainorangelemon/complift
-cd complift
+git clone https://github.com/rainorangelemon/complift-t2i
+cd complift-t2i
 python run_lift.py --prompt "a black car and a white clock"
 ```
 
