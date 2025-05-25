@@ -71,6 +71,12 @@ For detailed usage instructions, please refer to the respective component README
 If you use this code for your research, please cite our work:
 
 ```bibtex
+@inproceedings{yu2025improving,
+  title={Improving Compositional Generation with Diffusion Models Using Lift Scores},
+  author={Yu, Chenning and Gao, Sicun},
+  booktitle={Proceedings of the 42nd International Conference on Machine Learning (ICML)},
+  year={2025}
+}
 ```
 
 ## 🙏 Acknowledgements
