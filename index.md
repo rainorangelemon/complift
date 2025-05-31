@@ -7,6 +7,13 @@ date:   2020-05-21 15:38:11 -0800
 usemathjax: true
 ---
 
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@ChenningYu">
+<meta name="twitter:creator" content="@ChenningYu">
+<meta name="twitter:title" content="Improving Compositional Generation with Diffusion Models Using Lift Scores">
+<meta name="twitter:description" content="We propose a training-free compositional criterion for rejection / resampling with diffusion models.">
+<meta name="twitter:image" content="https://rainorangelemon.github.io/complift/data/accepted_vs_rejected.jpg">
+
 <!-- Add viewport meta tag for mobile responsiveness -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
